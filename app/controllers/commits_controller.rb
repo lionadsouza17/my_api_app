@@ -1,18 +1,31 @@
 class CommitsController < ApplicationController
-  before_action :set_repository
-  before_action :set_commit, only: [:show, :diff]
+  # before_action :set_repository
+  # before_action :set_commit, only: [:show]
 
   # GET /repositories/:owner_name/commits/:commit_id
   def show
     # render json: @commit
-    render json: { 
-      "oid": @commit.id,
-      "message": @commit.message  
+    # 
+    @commit_hash = params[:commit_id]
+    @repository = Rugged::Repository.new('.')
+    @commit = @repository.lookup(@commit_hash)
+    # parent_commit = @commit.parents.first
+
+    if @commit
+      render json: { 
+      "oid": @commit.tree.oid,
+      "message": @commit.message,
+      "diff patch": @diff_text
     }
+    else
+      render json: { 
+      "error": 'Failure'
+    }
+    end
   end
 
   def show_diff
-    @commit_hash = params[:commit_hash]
+    @commit_hash = params[:commit_id]
     @repository = Rugged::Repository.new('.')
     @commit = @repository.lookup(@commit_hash)
     parent_commit = @commit.parents.first
@@ -20,8 +33,17 @@ class CommitsController < ApplicationController
     if parent_commit
       diff = parent_commit.diff(@commit)
       @diff_text = diff.patch
+      render json: { 
+      "changeKind": "MODIFIED",
+      "message": @commit.message,
+      "diff patch": @diff_text
+    }
     else
-      @diff_text = "No parent commit found."
+      @diff_text = "No parent commit found. intial commit!"
+      render json: { 
+      "changeKind": "intial commit",
+      "message": @commit.message  
+    }
     end
   end
 
