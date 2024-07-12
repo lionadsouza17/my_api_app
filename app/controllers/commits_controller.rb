@@ -13,9 +13,9 @@ class CommitsController < ApplicationController
 
   def show_diff
     @commit_hash = params[:commit_hash]
-    @repository = Rugged::Repository.new('.')  # Assuming you are in the root directory of your Git repository
+    @repository = Rugged::Repository.new('.')
     @commit = @repository.lookup(@commit_hash)
-    parent_commit = @commit.parents.first  # Get the first parent of the commit (assuming it's a simple linear history)
+    parent_commit = @commit.parents.first
 
     if parent_commit
       diff = parent_commit.diff(@commit)
@@ -24,7 +24,7 @@ class CommitsController < ApplicationController
       @diff_text = "No parent commit found."
     end
   end
-  
+
   private
 
   def set_repository
