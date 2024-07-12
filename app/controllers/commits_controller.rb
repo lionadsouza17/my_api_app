@@ -24,7 +24,7 @@ class CommitsController < ApplicationController
     end
   end
 
-  def show_diff
+  def diff
     @commit_hash = params[:commit_id]
     @repository = Rugged::Repository.new('.')
     @commit = @repository.lookup(@commit_hash)
