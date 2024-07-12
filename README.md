@@ -1,4 +1,6 @@
 # README
+I have used the rugged gem: https://github.com/libgit2/rugged
+
 Added routes for
 
 1. Get a commit by ID
